@@ -1,4 +1,5 @@
 import elAlambiqueViajero.*
+
 test "luke cuenta cuando va de viaje"{
     luke.viajar(paris)
     assert.equals(1, luke.cantidadViajes())
@@ -8,7 +9,6 @@ test "luke viaja a paris"{
     luke.viajar(paris)
     assert.equals("Llavero Torre Eiffel", luke.recuerdo())
 }
-
 
 test "luke viaja a bs as"{
     luke.viajar(buenosAires)
@@ -56,9 +56,41 @@ test "luke viaja 2 veces, quiere viajar a Paris y no puede"{
 
 test "luke viaja a hurlingham en el convertible convertido en chatarra" {
   luke.vehiculo(convertible)
-  convertible.convertir(chatarra)
+  convertible.convertirEn(chatarra)
   luke.viajar(hurlingham)
   assert.equals("sticker de la Unahur",luke.recuerdo())
   assert.equals(5,chatarra.cañones())
 
-  }
+}
+
+test "Se incriben los autos y la carrera se lleva a cabo en paris"{
+    carrera.asignarCuidad(paris)
+    carrera.verificarInscripcion(alambiqueVeloz)
+    carrera.verificarInscripcion(chatarra)
+    carrera.verificarInscripcion(superPerrati)
+    carrera.viajar()
+    assert.equals(chatarra, carrera.ganador())
+}
+
+test "Se incriben los vehiculos para competir en paris pero luego cambian a la cuidad a buenos aires"{
+    carrera.asignarCuidad(paris)
+    carrera.verificarInscripcion(alambiqueVeloz)
+    carrera.verificarInscripcion(chatarra)
+    carrera.verificarInscripcion(superPerrati)
+    carrera.replanificacionEn(buenosAires)
+    carrera.viajar()
+    assert.equals(chatarra, carrera.ganador())
+}
+
+test "Se incriben los vehiculos para competir en bagdad y super perreti hace trampa y no gana la carrera"{
+    carrera.asignarCuidad(bagdad)
+    carrera.verificarInscripcion(alambiqueVeloz)
+    carrera.verificarInscripcion(chatarra)
+    carrera.verificarInscripcion(superPerrati)
+    carrera.verificarInscripcion(antigualla)
+    carrera.verificarInscripcion(moto)
+    superPerrati.hacerTrampa()
+    superPerrati.hacerTrampa()
+    carrera.viajar()
+    assert.notEquals(superPerrati, carrera.ganador())
+}

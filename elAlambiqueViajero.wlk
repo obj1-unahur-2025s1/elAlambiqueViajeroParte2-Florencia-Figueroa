@@ -19,10 +19,9 @@ object luke{
 
 
 //LUGARES
-
 object paris{
     method recuerdoTipico() = "Llavero Torre Eiffel"
-    method puedeLlegar(movil) =  movil.puedeFuncionar() 
+    method puedeLlegar(auto) =  auto.puedeFuncionar() 
     
 }
 
@@ -35,116 +34,132 @@ object bagdad {
     var recuerdo = "bidon de petroleo"
     method recuerdoTipico() = recuerdo
     method recuerdo(nuevo) {recuerdo = nuevo }
-    method puedeLlegar(cualquierCosa) = true
+    method puedeLlegar(auto) = true
 }
 
 object lasVegas{
     var homenaje = paris
     method homenaje(lugar) {homenaje = lugar}
     method recuerdoTipico() = homenaje.recuerdoTipico()
-    method puedeLlegar(vehiculo) = homenaje.puedeLlegar(vehiculo)
+    method puedeLlegar(auto) = homenaje.puedeLlegar(auto)
 }
 
 object hurlingham{
-   method puedeLlegar(vehiculo) =
-     vehiculo.puedeFuncionar() and vehiculo.rapido() and vehiculo.patenteValida()
-  method recuerdoTipico() = "sticker de la Unahur"
+    method puedeLlegar(auto) =
+        auto.puedeFuncionar() and auto.rapido() and auto.patenteValida()
+    method recuerdoTipico() = "sticker de la Unahur"
 }
 
 
 
 //VEHICULOS
-
 object alambiqueVeloz {
-    const rapido = true
     var combustible = 20
+    const rapido = true
     const consumoPorViaje = 10
     const patente = "AB123JK"
+
     method puedeFuncionar() = combustible >= consumoPorViaje
-    method desgaste() {
-        combustible = combustible - consumoPorViaje
-    }
+    method desgaste() {combustible = combustible - consumoPorViaje}
     method rapido() = rapido
     method patenteValida() = patente.head() == "A"
+    method velocidad() = combustible * 1.5
 }
 
 object antigualla {
   const gangsters = ["mario", "marco", "chincho", "brian", "florencia", "amelie", "pablo"]
-  method esRapido() = gangsters.fold(0,{acum,gangster => acum + gangster.length()}) < 24
-  method puedeFuncionar() = gangsters.even()
-  method desgaste() {
-    gangsters.remove(gangsters.last())
-  }
+
+  method rapido(){}
+  method puedeFuncionar() = gangsters.size().even()
+  method patenteValida() = chatarra.rapido() 
+  method desgaste() {gangsters.remove(gangsters.last())}
+  method velocidad() = gangsters.fold(0, {acum,gangsters => acum + gangsters.length()})
+
   method bajarDelAuto(unGangster) = gangsters.remove(unGangster)
   method subirAlAuto(unGangster) = gangsters.add(unGangster)
-  method patenteValida() = chatarra.rapido() 
 }
-/*
-El vehículo conducido por Pierre Nodoyuna y Patán si bien es más rápido que muchos otros, siempre intentan hacer 
-trampas o perjudicar a los otros corredores y terminan tardando más en llegar a la meta.
-*/
+
+object superPerrati {
+    var velocidad = 50
+
+    method rapido() = true
+    method patenteValida()= true
+    method desgaste(){velocidad = velocidad - 2}
+    method puedeFuncionar() = velocidad > 0
+    method velocidad() = velocidad
+    method hacerTrampa(){velocidad = velocidad - 10}
+}
+
+
 object chatarra {
     var cañones = 10
     var municiones = "ACME"
-    method puedeFuncionar() = municiones == "ACME" and cañones.between(6,12)
-    method rapido() = municiones.size() < cañones
-    method desgaste(){
-        cañones = (cañones / 2).roundUp(0)
-        if (cañones < 5 )
-          municiones = municiones + " Obsoleto"
-    }
-    method patenteValida() = municiones.take(4) == "ACME" 
+    const velocidad = 100
+
     method cañones() = cañones
+    method rapido() = municiones.size() < cañones
+    method patenteValida() = municiones.take(4) == "ACME" 
+    method puedeFuncionar() = municiones == "ACME" and cañones.between(6,12)
+    method velocidad() = velocidad * cañones
+    method desgaste(){ cañones = (cañones / 2).roundUp(0)
+                       if (cañones < 5 ) municiones = municiones + " Obsoleto"
+    }    
 }
 
 object convertible{
     var posicionActual = 0
     var convertido = chatarra
     const autosAConvertir = [chatarra, alambiqueVeloz, antigualla, moto]
-    method autoActual() = convertido
-    method puedeFuncionar() = convertido.puedeFuncionar() 
+
     method rapido() = convertido.rapido()
+    method puedeFuncionar() = convertido.puedeFuncionar()
+    method patenteValida() = convertido.patenteValida()
     method desgaste() = convertido.desgaste()
+    method velocidad() = convertido.velocidad()
+
+    method autoActual() = convertido
+    method convertirEn(vehiculo){convertido = vehiculo}
     method convertirse() {
         posicionActual = posicionActual + 1
         convertido = autosAConvertir.get(posicionActual)
     }
-    method convertirEn(vehiculo){
-        convertido = vehiculo
-    }
-    method patenteValida() = convertido.patenteValida()
- 
 }
 
 object moto{
     method rapido() = true
     method puedeFuncionar() = not self.rapido()
-    method desgaste() { }
+    method desgaste() {}
     method patenteValida() = false
+    method velocidad() = 5
 }
 
 
 
-//CENTRO DE INSCRIPCIONES
-
-object centro {
+//CENTRO DE INSCRIPCIONES - CARRERA
+object carrera {
     var lugarCarrera = paris
-    const vehiculosIncriptos = #{}
-    const rechazados = #{}
+    const vehiculosIncriptos = []
+    const vehiculosRechazados = []
 
-    method verificar(vehiculo){
-        if(lugarCarrera.puedeLlegar(vehiculo)){
+    method asignarCuidad(unLugar){lugarCarrera = unLugar} 
+
+    method verificarInscripcion(vehiculo){
+        if(lugarCarrera.puedeLlegar(vehiculo)) 
             vehiculosIncriptos.add(vehiculo)
-        }
-        else{
-            rechazados.add(vehiculo)
-        }
+        else 
+            vehiculosRechazados.add(vehiculo)
+        
     }
-
+    method inscriptosEnCarrera() = vehiculosIncriptos
     method replanificacionEn(unLugar) {
       lugarCarrera = unLugar
-      vehiculosIncriptos.forEach{inscripto => self.verificar(inscripto)}
-      rechazados.forEach{rechazado => self.verificar(rechazado)}
+      vehiculosIncriptos.forEach{i => self.verificarInscripcion(i)}
+      vehiculosRechazados.forEach{r => self.verificarInscripcion(r)}
     }
-}
+    method viajar(){
+        vehiculosIncriptos.forEach({v => v.desgaste()})
+    }
 
+    method ganador() =
+        vehiculosIncriptos.max({v => v.velocidad()})
+}
